@@ -1,0 +1,68 @@
+[
+  {
+    "report_id": "67dae3d3-818e-48f1-a05b-6fa42f9356ac",
+    "note_id": "test_note_001",
+    "timestamp": "2025-12-11T12:30:00Z",
+    "severity": "Critical",
+    "harassment_type": "stalking_following",
+    "risk_score": 12,
+    "needs_emergency_response": true,
+    "input_preview": "Someone is following me from the metro station to my apartment. It is midnight and I am alone. Pleas...",
+    "email_sent": false
+  },
+  {
+    "report_id": "235563f2-54ef-4670-ac84-140536055974",
+    "note_id": "test_note_001",
+    "timestamp": "2025-12-11T12:30:00Z",
+    "severity": "Critical",
+    "harassment_type": "stalking_following",
+    "risk_score": 12,
+    "needs_emergency_response": true,
+    "input_preview": "Someone is following me from the metro station to my apartment. It is midnight and I am alone. Pleas...",
+    "email_sent": false
+  },
+  {
+    "report_id": "50f4540a-97ee-44ae-bd75-fcc304456c82",
+    "note_id": "test_note_002",
+    "timestamp": "2025-12-11T12:35:00Z",
+    "severity": "Medium",
+    "harassment_type": "threats_violence",
+    "risk_score": 4,
+    "needs_emergency_response": false,
+    "input_preview": "He tried to grab me and pushed me into his car. He has a knife!",
+    "email_sent": false
+  },
+  {
+    "report_id": "a1780711-796a-4449-90d1-232671bf84e5",
+    "note_id": "test_note_003",
+    "timestamp": "2025-12-11T12:40:00Z",
+    "severity": "Low",
+    "harassment_type": "unknown",
+    "risk_score": 1,
+    "needs_emergency_response": false,
+    "input_preview": "My manager keeps making sexual comments to me at work. I am uncomfortable.",
+    "email_sent": false
+  },
+  {
+    "report_id": "f4e7f17f-ff15-4d6d-9af5-56d3f5c206cf",
+    "note_id": "test_note_004",
+    "timestamp": "2025-12-11T12:50:00Z",
+    "severity": "Critical",
+    "harassment_type": "threats_violence",
+    "risk_score": 16,
+    "needs_emergency_response": true,
+    "input_preview": "He tried to grab me and pushed me into his car. He has a knife!",
+    "email_sent": false
+  },
+  {
+    "report_id": "222623f6-7c1b-4100-b118-32005c2ed736",
+    "note_id": "test_note_005",
+    "timestamp": "2025-12-11T12:55:00Z",
+    "severity": "Low",
+    "harassment_type": "workplace_harassment",
+    "risk_score": 1,
+    "needs_emergency_response": false,
+    "input_preview": "My manager keeps making sexual comments to me at work. I am uncomfortable.",
+    "email_sent": false
+  }
+]
