@@ -1,0 +1,251 @@
+PROJECT TITLE
+
+Emergency Harassment Detection & Report Generation Workflow (Voice-Based)
+
+🟩 PRIMARY OBJECTIVE
+
+Build a production-ready backend endpoint that:
+
+Accepts POST requests from SpeakSpace with prompt, note_id, and timestamp
+
+Analyses the text using rule-based classification only (NO AI, NO API KEYS)
+
+Extracts harassment type, risk indicators, severity, emotional state, etc.
+
+Generates a structured emergency report
+
+Emails this report to a fixed list of recipients
+
+Logs the event internally (JSON file / DB)
+
+Returns a minimal JSON { "status": "success" } as required by SpeakSpace
+
+This backend MUST work 100% offline, using the JSON dataset I provide.
+
+🟦 INPUT SPECIFICATION (AS RECEIVED FROM SPEAKSPACE)
+
+The backend receives a POST request:
+
+{
+  "prompt": "Your configured instruction + transcribed text from voice note",
+  "note_id": "unique_identifier",
+  "timestamp": "ISO_8601"
+}
+
+
+Never expect additional fields.
+
+🟩 BACKEND REQUIREMENTS
+✔ 1. Framework
+
+Use:
+
+Node.js Express OR Python FastAPI
+(Choose whichever you think is the most stable and easy for deployment — usually Node.js for Render/Vercel.)
+
+✔ 2. Load the rule-based dataset
+
+Load the JSON dataset (safety_nlp_dataset.json) at boot time.
+
+Dataset includes:
+
+harassment categories
+
+keyword lists
+
+severity keywords
+
+emotional signals
+
+location indicators
+
+time-based risk factors
+
+behavior patterns
+
+recommended actions
+
+Your rule engine should:
+
+perform case-insensitive matching
+
+use exact and substring detection
+
+count how many indicators are hit
+
+score severity based on rules
+
+✔ 3. RULE ENGINE LOGIC
+
+The backend must extract:
+
+Field	How to detect
+harassment_type	category with max keyword matches
+severity	based on critical → high → medium → low scoring
+emotion_detected	match emotional indicator list
+danger_signals	match emergency phrases
+location_detected	match location words
+risk_score	number of matched threat indicators
+needs_emergency_response	true if severity = Critical or High
+recommended_actions	map from severity matrix
+summary	one-line auto summary
+raw_input	full prompt text
+timestamp_received	from input
+report_id	UUID
+note_id	from input
+🟧 4. REPORT GENERATION
+
+Generate a formatted report:
+
+===== EMERGENCY INCIDENT REPORT =====
+
+Report ID: <UUID>
+Note ID: <note_id>
+Time: <timestamp>
+
+Input Summary:
+<1–2 lines summary>
+
+Extracted Details:
+- Harassment Type: <type>
+- Severity Level: <severity>
+- Detected Emotions: <emotion>
+- Risk Score: <score>
+- Danger Signals: <signals>
+- Possible Location: <location>
+- Emergency Response Needed: <true/false>
+
+Recommended Immediate Actions:
+<bullet list>
+
+Full User Input:
+<prompt text>
+
+====================================
+
+🟦 5. SEND EMAIL TO THESE TEST EMAILS
+
+Send the report to all the following:
+
+kenn62612@gmail.com
+bharathimuthusamy2023@gmail.com
+karthivv929@gmail.com
+vink90926@gmail.com
+vincentkennyken123@gmail.com
+
+
+Email Specs:
+
+Subject: “🚨 Safety Report – Immediate Review Required”
+
+Body: exact report text
+
+Use nodemailer (Node) or smtplib (Python)
+
+Use a dummy Gmail SMTP account (configurable in .env)
+
+🟩 6. LOGGING
+
+Store every processed incident in:
+
+logs/incidents.json
+
+Append entries (list) as:
+
+{
+  "report_id": "...",
+  "timestamp": "...",
+  "severity": "...",
+  "harassment_type": "...",
+  "input": "..."
+}
+
+🟦 7. RETURN RESPONSE (REQUIRED BY SPEAKSPACE)
+
+Return exactly:
+
+{
+  "status": "success",
+  "message": "Workflow executed"
+}
+
+
+Must always be HTTP 200 unless input is invalid.
+
+🟧 8. ERROR HANDLING
+
+Return:
+
+400 for malformed input
+
+500 for internal errors
+
+Format:
+
+{
+  "status": "error",
+  "message": "<description>"
+}
+
+🟦 9. DEPLOYMENT REQUIREMENTS
+
+Backend must be deployable on:
+
+Render
+
+Vercel
+
+Railway
+
+AWS Lambda
+Choose 1 and prepare guides for that.
+
+Include:
+
+README.md
+
+.env.example
+
+Email configuration instructions
+
+Route: /api/process
+
+🟩 10. OUTPUT FORMAT OF THIS LLM
+
+The LLM must output:
+
+Full folder structure
+
+Full backend code
+
+Rule engine code
+
+Email sending module
+
+Logging module
+
+Deployment instructions
+
+Sample SpeakSpace Action configuration
+
+Test cases
+
+Ready-to-run server
+
+All required files in one blueprint
+
+🟦 FINAL NOTE TO LLM
+
+DO NOT use AI calls.
+
+DO NOT rely on external NLP.
+
+ONLY use rule-based matching using the dataset.
+
+Keep code clean, modular, and professional.
+
+Prioritize reliability and safety.
+
+Follow hackathon rules strictly.
+
+Ensure success JSON return.
