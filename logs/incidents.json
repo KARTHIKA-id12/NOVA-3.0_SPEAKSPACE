@@ -492,5 +492,31 @@
     "email_sent": true,
     "sms_sent": true,
     "call_made": true
+  },
+  {
+    "report_id": "18c57ede-2470-4fce-8766-0cc384b2d4f4",
+    "note_id": "e201ff14-02d5-4b2b-8c11-1116620d23fd",
+    "timestamp": "2025-12-13T17:15:43.387Z",
+    "severity": "Critical",
+    "harassment_type": "stalking_following",
+    "risk_score": 11,
+    "needs_emergency_response": true,
+    "input_preview": "My name is Sarah. I am being followed by a stranger from the metro station to my apartment. He has b...",
+    "email_sent": true,
+    "sms_sent": true,
+    "call_made": true
+  },
+  {
+    "report_id": "82137275-ddff-479d-870b-37274371a250",
+    "note_id": "2d1e3408-2d29-463f-8c7d-baa6318924f8",
+    "timestamp": "2025-12-13T17:20:00.304Z",
+    "severity": "Low",
+    "harassment_type": "unknown",
+    "risk_score": 0,
+    "needs_emergency_response": false,
+    "input_preview": "I want to order pizza as i am hungry now can you order it for me",
+    "email_sent": true,
+    "sms_sent": false,
+    "call_made": false
   }
 ]

@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { z } from "zod";
@@ -10,8 +11,8 @@ import { logIncident, initializeLogger, getIncidents } from "./incidentLogger";
 
 const processRequestSchema = z.object({
   prompt: z.string().min(1, "Prompt is required"),
-  note_id: z.string().min(1, "Note ID is required"),
-  timestamp: z.string().min(1, "Timestamp is required")
+  note_id: z.string().optional(),
+  timestamp: z.string().optional()
 });
 
 export async function registerRoutes(
@@ -35,7 +36,10 @@ export async function registerRoutes(
         });
       }
 
-      const { prompt, note_id, timestamp } = parseResult.data;
+      // Default values for missing fields to support direct SpeakSpace integration
+      const { prompt } = parseResult.data;
+      const note_id = parseResult.data.note_id || uuidv4();
+      const timestamp = parseResult.data.timestamp || new Date().toISOString();
 
       const analysis = analyzeText(prompt);
 
