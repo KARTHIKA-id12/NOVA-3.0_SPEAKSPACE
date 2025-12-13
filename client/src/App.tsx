@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
+import TestInterface from "@/pages/TestInterface";
 
 function Router() {
   return (
@@ -11,6 +12,7 @@ function Router() {
       {/* Add pages below */}
       {/* <Route path="/" component={Home}/> */}
       {/* Fallback to 404 */}
+      <Route path="/" component={TestInterface} />
       <Route component={NotFound} />
     </Switch>
   );

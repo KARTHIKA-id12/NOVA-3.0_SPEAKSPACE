@@ -59,13 +59,14 @@ export interface AnalysisResult {
   summary: string;
   description: string;
   matched_categories: Record<string, number>;
+  name_detected?: string;
 }
 
 let dataset: Dataset | null = null;
 
 function loadDataset(): Dataset {
   if (dataset) return dataset;
-  
+
   const dataPath = join(process.cwd(), "server", "data", "safety_nlp_dataset.json");
   const rawData = readFileSync(dataPath, "utf-8");
   dataset = JSON.parse(rawData) as Dataset;
@@ -83,80 +84,80 @@ function normalizeText(text: string): string {
 function countMatches(text: string, keywords: string[]): number {
   const normalizedText = normalizeText(text);
   let count = 0;
-  
+
   for (const keyword of keywords) {
     const normalizedKeyword = normalizeText(keyword);
     if (normalizedText.includes(normalizedKeyword)) {
       count++;
     }
   }
-  
+
   return count;
 }
 
 function findMatches(text: string, keywords: string[]): string[] {
   const normalizedText = normalizeText(text);
   const matches: string[] = [];
-  
+
   for (const keyword of keywords) {
     const normalizedKeyword = normalizeText(keyword);
     if (normalizedText.includes(normalizedKeyword)) {
       matches.push(keyword);
     }
   }
-  
+
   return matches;
 }
 
 function detectHarassmentType(text: string, data: Dataset): { type: string; matches: Record<string, number> } {
   const categories = data.harassment_categories;
   const matchCounts: Record<string, number> = {};
-  
+
   for (const [category, keywords] of Object.entries(categories)) {
     matchCounts[category] = countMatches(text, keywords);
   }
-  
+
   let maxCategory = "unknown";
   let maxCount = 0;
-  
+
   for (const [category, count] of Object.entries(matchCounts)) {
     if (count > maxCount) {
       maxCount = count;
       maxCategory = category;
     }
   }
-  
+
   return { type: maxCategory, matches: matchCounts };
 }
 
 function calculateSeverityScore(text: string, data: Dataset): number {
   const weights = data.severity_scoring.weights;
   let score = 0;
-  
+
   const criticalMatches = countMatches(text, data.severity_scoring.critical_keywords);
   score += criticalMatches * weights.critical_keywords;
-  
+
   const highMatches = countMatches(text, data.severity_scoring.high_keywords);
   score += highMatches * weights.high_keywords;
-  
+
   const emotionMatches = countMatches(text, data.emotion_fear_indicators);
   score += emotionMatches * weights.emotion_keywords;
-  
+
   const timeMatches = countMatches(text, data.time_indicators);
   if (timeMatches > 0) {
     score += weights.location_night_bonus;
   }
-  
+
   const vulnerabilityMatches = countMatches(text, data.victim_vulnerability_factors);
   if (vulnerabilityMatches > 0) {
     score += weights.vulnerability_bonus;
   }
-  
+
   const followMatches = countMatches(text, ["follow", "following", "followed"]);
   if (followMatches > 0) {
     score += weights.follow_keyword_bonus;
   }
-  
+
   return score;
 }
 
@@ -178,7 +179,7 @@ function calculateConfidence(
 ): number {
   const rules = data.confidence_rules;
   let confidence = rules.base_confidence;
-  
+
   if (hasCriticalKeyword) {
     confidence += rules.boosts.critical_keyword_present;
   }
@@ -194,7 +195,7 @@ function calculateConfidence(
   if (hasVulnerability) {
     confidence += rules.boosts.vulnerability_present;
   }
-  
+
   return Math.min(confidence, 0.99);
 }
 
@@ -203,11 +204,37 @@ function detectLocation(text: string, data: Dataset): string {
   return locations.length > 0 ? locations[0] : "unknown";
 }
 
+function detectName(text: string): string {
+  // Simple heuristics for name extraction
+  // Matches "my name is [Name]", "i am [Name]", "this is [Name]"
+  // This is basic and can be improved with Named Entity Recognition (NER) models later
+  const namePatterns = [
+    /my name is ([A-Z][a-z]+(?: [A-Z][a-z]+)?)/i,
+    /i am ([A-Z][a-z]+(?: [A-Z][a-z]+)?)/i,
+    /this is ([A-Z][a-z]+(?: [A-Z][a-z]+)?)/i,
+    /myself ([A-Z][a-z]+(?: [A-Z][a-z]+)?)/i
+  ];
+
+  for (const pattern of namePatterns) {
+    const match = text.match(pattern);
+    if (match && match[1]) {
+      // Filter out common false positives if they appear in the start of sentences
+      const candidate = match[1].trim();
+      const lowerIds = ["scared", "afraid", "worried", "safe", "unsafe", "here", "there"];
+      if (!lowerIds.includes(candidate.toLowerCase())) {
+        return candidate;
+      }
+    }
+  }
+
+  return "unknown";
+}
+
 function generateSummary(text: string, harassmentType: string, severity: string): string {
   const words = text.split(/\s+/).slice(0, 15);
   const truncated = words.join(" ");
   const suffix = words.length >= 15 ? "..." : "";
-  
+
   return `${severity} ${harassmentType.replace(/_/g, " ")} incident reported: "${truncated}${suffix}"`;
 }
 
@@ -219,40 +246,62 @@ function generateDescription(
   dangerSignals: string[]
 ): string {
   let description = `User reports ${harassmentType.replace(/_/g, " ")} incident with ${severity.toLowerCase()} severity level.`;
-  
+
   if (emotionsDetected.length > 0) {
     description += ` User appears ${emotionsDetected.slice(0, 3).join(", ")}.`;
   }
-  
+
   if (locationDetected !== "unknown") {
     description += ` Location: ${locationDetected}.`;
   }
-  
+
   if (dangerSignals.length > 0) {
     description += ` Warning signals: ${dangerSignals.slice(0, 3).join(", ")}.`;
   }
-  
+
   return description;
 }
 
 export function analyzeText(prompt: string): AnalysisResult {
   const data = loadDataset();
-  
-  const { type: harassmentType, matches: matchedCategories } = detectHarassmentType(prompt, data);
-  
-  const riskScore = calculateSeverityScore(prompt, data);
-  const severity = scoreToSeverity(riskScore);
-  
+
+  /* 
+   * ADVANCED FEATURE: Discreet Code Word Detection ("Phrase Automation")
+   * Detects non-violent but specific phrases used to disguise emergency calls 
+   * (e.g., "Order a pizza" -> 911 proxy).
+   * This overrides standard sentiment scoring to ensure safety.
+   */
+  const discreetPhrases = data.harassment_categories.discreet_coded_alerts || [];
+  const discreetMatches = countMatches(prompt, discreetPhrases);
+
+  console.log(`[RuleEngine] Checking discreet phrases: ${JSON.stringify(discreetPhrases)}`);
+  console.log(`[RuleEngine] Loaded categories: ${Object.keys(data.harassment_categories)}`);
+  console.log(`[RuleEngine] Matches found: ${discreetMatches}`);
+
+  const isDiscreetSOS = discreetMatches > 0;
+
+  let { type: harassmentType, matches: matchedCategories } = detectHarassmentType(prompt, data);
+
+  let riskScore = calculateSeverityScore(prompt, data);
+  let severity = scoreToSeverity(riskScore);
+
+  if (isDiscreetSOS) {
+    severity = "Critical";
+    riskScore = 20; // Max out score
+    harassmentType = "discreet_coded_alerts";
+  }
+
   const emotionsDetected = findMatches(prompt, data.emotion_fear_indicators);
   const dangerSignals = findMatches(prompt, data.critical_flags);
   const locationDetected = detectLocation(prompt, data);
-  
+  const nameDetected = detectName(prompt);
+
   const hasCriticalKeyword = countMatches(prompt, data.severity_scoring.critical_keywords) > 0;
   const multipleCategoryMatches = Object.values(matchedCategories).filter(c => c > 0).length > 1;
   const hasEmotion = emotionsDetected.length > 0;
   const hasLocation = locationDetected !== "unknown";
   const hasVulnerability = countMatches(prompt, data.victim_vulnerability_factors) > 0;
-  
+
   const confidenceScore = calculateConfidence(
     prompt,
     data,
@@ -262,15 +311,15 @@ export function analyzeText(prompt: string): AnalysisResult {
     hasLocation,
     hasVulnerability
   );
-  
+
   const needsEmergencyResponse = severity === "Critical" || severity === "High";
-  
+
   const severityKey = severity.toLowerCase() as "critical" | "high" | "medium" | "low";
   const recommendedActions = data.recommended_actions_bank[severityKey] || data.safe_defaults.recommended_immediate_actions;
-  
+
   const summary = generateSummary(prompt, harassmentType, severity);
   const description = generateDescription(harassmentType, severity, emotionsDetected, locationDetected, dangerSignals);
-  
+
   return {
     harassment_type: harassmentType,
     severity,
@@ -284,7 +333,8 @@ export function analyzeText(prompt: string): AnalysisResult {
     recommended_actions: recommendedActions,
     summary,
     description,
-    matched_categories: matchedCategories
+    matched_categories: matchedCategories,
+    name_detected: nameDetected
   };
 }
 

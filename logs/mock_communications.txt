@@ -1,0 +1,9 @@
+
+========================================
+[MOCK TWILIO SMS]
+Timestamp: 2025-12-13T12:09:32.480Z
+To: +0987654321
+From: +1234567890
+Message/Script:
+[URGENT SAFETY ALERT] Alert: High Incident. Risk: 8. Loc: park. Action: Move to a safe public space
+========================================

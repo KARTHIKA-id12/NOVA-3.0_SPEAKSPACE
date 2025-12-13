@@ -67,7 +67,7 @@ Retrieve all logged incidents (for debugging/admin).
 
 ## Environment Variables
 
-Required secrets (stored in Replit Secrets):
+Required secrets:
 - `SMTP_USER`: Gmail address for sending emails
 - `SMTP_PASS`: Gmail App Password (not regular password)
 

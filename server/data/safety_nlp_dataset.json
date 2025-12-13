@@ -42,7 +42,8 @@
       "changing direction toward me",
       "car following me",
       "van following me",
-      "person following"
+      "person following",
+      "suspicious person"
     ],
     "sexual_harassment": [
       "touched me",
@@ -158,6 +159,16 @@
       "stalking online",
       "doxxing",
       "unknown"
+    ],
+    "discreet_coded_alerts": [
+      "order a pizza",
+      "pepperoni pizza",
+      "ask for angela",
+      "call my travel agent",
+      "package delivery",
+      "track my delivery",
+      "pizza",
+      "angela"
     ]
   },
   "critical_flags": [
@@ -208,7 +219,8 @@
     "helpless",
     "hopeless",
     "frightened",
-    "unsafe"
+    "unsafe",
+    "suspicious"
   ],
   "location_indicators": [
     "train",
@@ -243,7 +255,17 @@
     "bus stop",
     "platform",
     "taxi stand",
-    "bus depot"
+    "bus depot",
+    "department",
+    "staff room",
+    "library",
+    "lab",
+    "classroom",
+    "class",
+    "canteen",
+    "washroom",
+    "restroom",
+    "auditorium"
   ],
   "time_indicators": [
     "late night",
@@ -316,7 +338,11 @@
       "pushed",
       "car",
       "van",
-      "forced"
+      "forced",
+      "beating",
+      "beat",
+      "locked",
+      "trapped"
     ],
     "high_keywords": [
       "following",
@@ -328,7 +354,9 @@
       "dark place",
       "scared",
       "unsafe",
-      "threat"
+      "threat",
+      "suspicious",
+      "suspicious person"
     ],
     "score_to_level": {
       "0-3": "Low",

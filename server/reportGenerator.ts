@@ -16,19 +16,23 @@ export function generateReport(
   rawInput: string
 ): GeneratedReport {
   const reportId = uuidv4();
-  
+
   const actionsFormatted = analysis.recommended_actions
     .map((action, index) => `  ${index + 1}. ${action}`)
     .join("\n");
-  
+
   const emotionsFormatted = analysis.emotion_detected.length > 0
     ? analysis.emotion_detected.join(", ")
     : "None detected";
-  
+
   const dangerSignalsFormatted = analysis.danger_signals.length > 0
     ? analysis.danger_signals.join(", ")
     : "None detected";
-  
+
+  const nameField = analysis.name_detected && analysis.name_detected !== "unknown"
+    ? `\n- Victim Name: ${analysis.name_detected}`
+    : "";
+
   const formattedReport = `
 ===== EMERGENCY INCIDENT REPORT =====
 
@@ -40,14 +44,14 @@ Input Summary:
 ${analysis.summary}
 
 Extracted Details:
-- Harassment Type: ${analysis.harassment_type.replace(/_/g, " ")}
+- Harassment Type: ${analysis.harassment_type.replace(/_/g, " ")}${nameField}
+- Location: ${analysis.location_detected.toUpperCase()}
 - Severity Level: ${analysis.severity}
 - Victim Risk Level: ${analysis.victim_risk}
 - Detected Emotions: ${emotionsFormatted}
 - Risk Score: ${analysis.risk_score}
 - Confidence Score: ${(analysis.confidence_score * 100).toFixed(1)}%
 - Danger Signals: ${dangerSignalsFormatted}
-- Possible Location: ${analysis.location_detected}
 - Emergency Response Needed: ${analysis.needs_emergency_response ? "YES" : "NO"}
 
 Recommended Immediate Actions:
