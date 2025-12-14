@@ -1,4 +1,4 @@
-# SpeakSpace Emergency Harassment Detection API 🛡️
+# SafetyNet AI – Women’s Emergency Harassment Response System
 
 **A Privacy-First, Offline-Capable AI Safety Agent for Immediate Threat Response.**
 
@@ -57,20 +57,47 @@ npm run dev
 ---
 
 ## 🌐 Deployment Guide (for Judges)
+This project is designed for easy deployment and evaluation using standard Node.js workflows and popular cloud platforms.
+1.Clone or fork the repository:
+git clone <repository-url>
+cd SafetyNet-AI
 
-### Option 1: Render / Railway / Vercel
-1.  Fork this repository.
-2.  Create a new Web Service.
-3.  Set the **Build Command**: `npm install && npm run build`.
-4.  Set the **Start Command**: `npm start`.
-5.  Add the Environment Variables defined above.
+2.Install dependencies:
+npm install
 
-### Option 2: Replit
-1.  Import repository.
-2.  Add Secrets in the Tools pane (SMTP_USER, etc.).
-3.  Hit Run.
+3.Build the application:
+npm run build
 
----
+
+4.Start the server:
+npm start
+
+
+5.The API will be available at:
+http://localhost:5002
+
+
+This workflow demonstrates clean, maintainable code execution and aligns with standard production practices.
+
+### Option 2: Cloud Deployment (Render)
+1.Log in to Render.
+
+2.Select New Web Service.
+
+3.Connect your GitHub repository.
+
+4.Configure the service:
+
+Build Command:
+npm install && npm run build
+
+Start Command:
+npm start
+
+Add environment variables using the .env.example file as reference.
+
+Deploy the service.
+Once deployed, Render will provide a public URL that can be used for live API testing.
 
 ## 🔌 API Documentation
 
@@ -117,8 +144,87 @@ Copy-paste this into your SpeakSpace Action setup:
 
 ---
 
-## 🧪 Live Demo / Walkthrough (How to Verify)
+## 🧪 Live Demo & Evaluation Walkthrough
+## Deployed
+**Step 1: Access the Deployed API**
+The application is deployed and publicly accessible.
 
+Base URL (Example):
+https://nova-3-0-speakspace.onrender.com/
+
+API Endpoint:
+POST /api/process
+Note: Replace the base URL with the actual deployed URL provided in the submission.
+
+**Step 2: Prepare a Test Request**
+Judges can use Postman, cURL, or any REST client.
+
+Headers:
+
+{
+  "Content-Type": "application/json"
+}
+
+Sample Request Body (High-Risk Scenario):
+
+{
+  "prompt": "Help! I am being followed by a stranger near the bus stop. Please call for help.",
+  "note_id": "demo_live_001",
+  "timestamp": "2025-12-14T10:30:00Z"
+}
+
+**Step 3: Expected API Response**
+{
+  "status": "success",
+  "message": "Threat analysis completed and emergency workflow triggered"
+}
+
+This confirms that the NLP engine successfully processed the input and initiated the response pipeline.
+
+**Step 4: Verify Emergency Response Actions**
+
+For High or Critical threat levels, the following actions are automatically triggered:
+
+SMS Alert
+
+An emergency message is sent to the configured contact number via Twilio.
+
+Automated Voice Call
+
+A voice call is placed with a synthesized emergency alert message.
+
+Email Incident Report
+
+A detailed incident report is sent to the configured email address.
+
+Incident Logging
+
+The event is securely logged for audit and verification purposes.
+
+
+**Step 5: SpeakSpace Integration Validation**
+
+If tested via SpeakSpace:
+
+Configure the SpeakSpace Action with the deployed URL.
+
+Submit a voice note.
+
+The transcription is automatically forwarded to the API.
+
+Threat analysis and emergency alerts are executed in real time.
+
+Evaluation Notes for Judges
+
+No external AI services are used.
+
+No voice data or transcripts are stored externally.
+
+All processing happens within the deployed service.
+
+The system is designed for low latency, privacy, and reliability.
+
+## Local 
 1.  **Start the Server:** Ensure it's running (`npm run dev`).
 2.  **Open Test Interface:** Navigate to `http://localhost:5002` in your browser.
 3.  **Submit a Test Case:**

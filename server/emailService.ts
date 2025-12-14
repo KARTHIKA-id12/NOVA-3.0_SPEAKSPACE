@@ -26,22 +26,22 @@ export function initializeEmailService(): void {
 
   transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 465,
-    secure: true, // Use SSL
+    port: 587, // Changed to 587 (STARTTLS) which is often more reliable than 465 in some envs
+    secure: false, // Must be false for port 587
     auth: {
       user: smtpUser,
       pass: smtpPass
     },
     // COMPLETED FIX: Force IPv4 and increase timeouts to handle Render<->Gmail latency
     family: 4,
-    connectionTimeout: 10000, // 10 seconds
-    greetingTimeout: 5000,
-    socketTimeout: 20000,
+    connectionTimeout: 30000, // Increased to 30 seconds
+    greetingTimeout: 15000,
+    socketTimeout: 30000,
     debug: true, // Enable debug logs to see exact handshake issues
     logger: true
   });
 
-  console.log("[EmailService] Email service initialized with IPv4 enforcement");
+  console.log("[EmailService] Email service initialized with IPv4 enforcement on port 587");
 }
 
 export async function sendEmergencyReport(reportText: string, severity: string, pdfBuffer?: Buffer, summary?: string): Promise<boolean> {
